@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Bell, Droplet, Heart, Search, Users } from 'lucide-react';
+import Image from 'next/image';
 
 type BloodRequest = {
   id: string;
@@ -142,11 +143,12 @@ function App() {
         </div>
 
         {/* Featured Image */}
-        <div className="rounded-lg overflow-hidden shadow-md">
-          <img
+        <div className="rounded-lg overflow-hidden shadow-md relative h-64">
+          <Image
             src="https://images.unsplash.com/photo-1615461066841-6116e61058f4?auto=format&fit=crop&w=1200&q=80"
             alt="Blood donation center"
-            className="w-full h-64 object-cover"
+            fill
+            style={{ objectFit: 'cover' }}
           />
         </div>
       </main>

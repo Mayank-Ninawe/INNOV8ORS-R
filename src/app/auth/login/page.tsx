@@ -1,98 +1,141 @@
 'use client';
 
 import { useState } from 'react';
-import { LogIn, Droplet } from 'lucide-react';
+import { Droplet, LogIn, AlertTriangle, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const router = useRouter();
+  const [action, setAction] = useState<string | null>(null);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertType, setAlertType] = useState('success');
+  
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // TODO: Implement login logic with Spring Boot backend
+    let data = Object.fromEntries(new FormData(e.currentTarget));
+    
+    // Simulate successful login
+    setAction(`submit ${JSON.stringify(data)}`);
+    setShowAlert(true);
+    setAlertType('success');
+    
+    // Redirect to dashboard after 2 seconds
+    setTimeout(() => {
+      router.push('/dashboard');
+    }, 2000);
   };
 
   return (
-    <div className="min-h-screen flex">
-      {/* Left side - Form */}
-      <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 bg-gray-900">
-        <div className="max-w-md w-full space-y-8">
-          <div>
-            <Link href="/" className="flex items-center justify-center space-x-2">
-              <Droplet className="h-8 w-8 text-primary" />
-              <span className="text-2xl font-bold text-white">BloodConnect</span>
-            </Link>
-            <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
-              Sign in to your account
-            </h2>
+    <div className="min-h-screen bg-[#0A1929] text-[#E0E0E0] flex flex-col">
+      {/* Header */}
+      <header className="bg-[#132F4C] shadow-md py-4">
+        <div className="container mx-auto px-4 flex justify-between items-center">
+          <Link href="/" className="flex items-center space-x-2 text-[#FFFFFF]">
+            <Droplet className="h-6 w-6 text-[#007FFF]" />
+            <span className="text-xl font-semibold">BloodConnect</span>
+          </Link>
+          <Link 
+            href="/"
+            className="flex items-center space-x-1 text-[#B0B0B0] hover:text-[#FFFFFF] transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Back to Home</span>
+          </Link>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="flex-1 flex items-center justify-center p-4">
+        <div className="w-full max-w-md p-8 rounded-lg bg-[#132F4C] border border-[#255D9A] shadow-xl">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-[#FFFFFF]">Welcome Back</h1>
+            <p className="text-[#B0B0B0] mt-2">Sign in to your account</p>
           </div>
-          <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-            <div className="rounded-md shadow-sm space-y-4">
-              <div>
-                <label htmlFor="email" className="sr-only">
-                  Email address
-                </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-700 bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
-                  placeholder="Email address"
-                />
+          
+          {/* Alert section */}
+          {showAlert && (
+            <div className="mb-6">
+              <div className={`rounded-lg p-4 border ${
+                alertType === 'success' 
+                  ? 'bg-green-900/20 border-green-500 text-green-400' 
+                  : 'bg-[#B71C1C]/20 border-[#B71C1C] text-[#EF5350]'
+              }`}>
+                <div className="flex items-center">
+                  <AlertTriangle className="h-5 w-5 mr-2" />
+                  <span>
+                    {alertType === 'success' 
+                      ? 'Login successful! Redirecting...' 
+                      : 'Invalid credentials. Please try again.'}
+                  </span>
+                </div>
               </div>
-              <div>
-                <label htmlFor="password" className="sr-only">
+            </div>
+          )}
+          
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            <div className="space-y-2">
+              <label htmlFor="email" className="block text-sm font-medium text-[#E0E0E0]">
+                Email
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                placeholder="Enter your email"
+                className="w-full px-4 py-3 bg-[#0A1929] border border-[#255D9A] focus:border-[#007FFF] focus:ring-1 focus:ring-[#007FFF] rounded-md text-[#FFFFFF] placeholder-[#718096]"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label htmlFor="password" className="block text-sm font-medium text-[#E0E0E0]">
                   Password
                 </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-700 bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
-                  placeholder="Password"
-                />
-              </div>
-            </div>
-
-            <div>
-              <button
-                type="submit"
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-              >
-                <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-                  <LogIn className="h-5 w-5 text-white" aria-hidden="true" />
-                </span>
-                Sign in
-              </button>
-            </div>
-
-            <div className="text-center">
-              <p className="text-sm text-gray-400">
-                Don't have an account?{' '}
-                <Link href="/auth/register" className="text-primary hover:text-primary-dark">
-                  Sign up
+                <Link href="/auth/forgot-password" className="text-xs text-[#007FFF] hover:text-[#0059B2]">
+                  Forgot password?
                 </Link>
-              </p>
+              </div>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                placeholder="Enter your password"
+                className="w-full px-4 py-3 bg-[#0A1929] border border-[#255D9A] focus:border-[#007FFF] focus:ring-1 focus:ring-[#007FFF] rounded-md text-[#FFFFFF] placeholder-[#718096]"
+              />
             </div>
+            
+            <div className="flex items-center">
+              <input
+                id="remember-me"
+                name="remember-me"
+                type="checkbox"
+                className="h-4 w-4 text-[#007FFF] bg-[#0A1929] border-[#255D9A] rounded focus:ring-[#007FFF]"
+              />
+              <label htmlFor="remember-me" className="ml-2 block text-sm text-[#B0B0B0]">
+                Remember me
+              </label>
+            </div>
+            
+            <button
+              type="submit"
+              className="w-full flex justify-center items-center gap-2 py-3 px-4 bg-[#007FFF] hover:bg-[#0059B2] text-white font-medium rounded-md transition-colors"
+            >
+              <LogIn className="h-5 w-5" />
+              <span>Sign In</span>
+            </button>
           </form>
+          
+          <div className="mt-6 text-center text-sm">
+            <span className="text-[#B0B0B0]">Don't have an account?</span>
+            <Link href="/auth/register" className="ml-1 text-[#007FFF] hover:text-[#0059B2]">
+              Register now
+            </Link>
+          </div>
         </div>
-      </div>
-      
-      {/* Right side - Image */}
-      <div className="hidden lg:block relative flex-1">
-        <div className="absolute inset-0 bg-auth-pattern bg-cover bg-center">
-          <div className="absolute inset-0 bg-gray-900/70 backdrop-blur-sm"></div>
-        </div>
-      </div>
+      </main>
     </div>
   );
 }

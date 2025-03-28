@@ -1,163 +1,190 @@
 'use client';
 
 import { useState } from 'react';
-import { UserPlus, Droplet } from 'lucide-react';
+import { Droplet, UserPlus, AlertTriangle, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function Register() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    bloodType: '',
-    phone: ''
-  });
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const router = useRouter();
+  const [action, setAction] = useState<string | null>(null);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertType, setAlertType] = useState('success');
+  
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // TODO: Implement registration logic with Spring Boot backend
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    let data = Object.fromEntries(new FormData(e.currentTarget));
+    
+    // Simulate successful registration
+    setAction(`submit ${JSON.stringify(data)}`);
+    setShowAlert(true);
+    setAlertType('success');
+    
+    // Redirect to login page after 2 seconds
+    setTimeout(() => {
+      router.push('/auth/login');
+    }, 2000);
   };
 
   return (
-    <div className="min-h-screen flex">
-      {/* Left side - Form */}
-      <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 bg-gray-900">
-        <div className="max-w-md w-full space-y-8">
-          <div>
-            <Link href="/" className="flex items-center justify-center space-x-2">
-              <Droplet className="h-8 w-8 text-primary" />
-              <span className="text-2xl font-bold text-white">BloodConnect</span>
-            </Link>
-            <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
-              Create your account
-            </h2>
+    <div className="min-h-screen bg-[#0A1929] text-[#E0E0E0] flex flex-col">
+      {/* Header */}
+      <header className="bg-[#132F4C] shadow-md py-4">
+        <div className="container mx-auto px-4 flex justify-between items-center">
+          <Link href="/" className="flex items-center space-x-2 text-[#FFFFFF]">
+            <Droplet className="h-6 w-6 text-[#007FFF]" />
+            <span className="text-xl font-semibold">BloodConnect</span>
+          </Link>
+          <Link 
+            href="/"
+            className="flex items-center space-x-1 text-[#B0B0B0] hover:text-[#FFFFFF] transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Back to Home</span>
+          </Link>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="flex-1 flex items-center justify-center p-4">
+        <div className="w-full max-w-md p-8 rounded-lg bg-[#132F4C] border border-[#255D9A] shadow-xl">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-[#FFFFFF]">Create Account</h1>
+            <p className="text-[#B0B0B0] mt-2">Join our blood donation community</p>
           </div>
-          <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-            <div className="rounded-md shadow-sm space-y-4">
-              <div>
-                <label htmlFor="name" className="sr-only">
-                  Full Name
+          
+          {/* Alert section */}
+          {showAlert && (
+            <div className="mb-6">
+              <div className={`rounded-lg p-4 border ${
+                alertType === 'success' 
+                  ? 'bg-green-900/20 border-green-500 text-green-400' 
+                  : 'bg-[#B71C1C]/20 border-[#B71C1C] text-[#EF5350]'
+              }`}>
+                <div className="flex items-center">
+                  <AlertTriangle className="h-5 w-5 mr-2" />
+                  <span>
+                    {alertType === 'success' 
+                      ? 'Registration successful! Redirecting to login...' 
+                      : 'Registration failed. Please try again.'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label htmlFor="firstName" className="block text-sm font-medium text-[#E0E0E0]">
+                  First Name
                 </label>
                 <input
-                  id="name"
-                  name="name"
+                  id="firstName"
+                  name="firstName"
                   type="text"
                   required
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-700 bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
-                  placeholder="Full Name"
+                  placeholder="First Name"
+                  className="w-full px-4 py-3 bg-[#0A1929] border border-[#255D9A] focus:border-[#007FFF] focus:ring-1 focus:ring-[#007FFF] rounded-md text-[#FFFFFF] placeholder-[#718096]"
                 />
               </div>
-              <div>
-                <label htmlFor="email" className="sr-only">
-                  Email address
+              
+              <div className="space-y-2">
+                <label htmlFor="lastName" className="block text-sm font-medium text-[#E0E0E0]">
+                  Last Name
                 </label>
                 <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
+                  id="lastName"
+                  name="lastName"
+                  type="text"
                   required
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-700 bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
-                  placeholder="Email address"
-                />
-              </div>
-              <div>
-                <label htmlFor="password" className="sr-only">
-                  Password
-                </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="new-password"
-                  required
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-700 bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
-                  placeholder="Password"
-                />
-              </div>
-              <div>
-                <label htmlFor="bloodType" className="sr-only">
-                  Blood Type
-                </label>
-                <select
-                  id="bloodType"
-                  name="bloodType"
-                  required
-                  value={formData.bloodType}
-                  onChange={handleChange}
-                  className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-700 bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
-                >
-                  <option value="">Select Blood Type</option>
-                  <option value="A+">A+</option>
-                  <option value="A-">A-</option>
-                  <option value="B+">B+</option>
-                  <option value="B-">B-</option>
-                  <option value="AB+">AB+</option>
-                  <option value="AB-">AB-</option>
-                  <option value="O+">O+</option>
-                  <option value="O-">O-</option>
-                </select>
-              </div>
-              <div>
-                <label htmlFor="phone" className="sr-only">
-                  Phone Number
-                </label>
-                <input
-                  id="phone"
-                  name="phone"
-                  type="tel"
-                  required
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-700 bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
-                  placeholder="Phone Number"
+                  placeholder="Last Name"
+                  className="w-full px-4 py-3 bg-[#0A1929] border border-[#255D9A] focus:border-[#007FFF] focus:ring-1 focus:ring-[#007FFF] rounded-md text-[#FFFFFF] placeholder-[#718096]"
                 />
               </div>
             </div>
-
-            <div>
-              <button
-                type="submit"
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+            
+            <div className="space-y-2">
+              <label htmlFor="email" className="block text-sm font-medium text-[#E0E0E0]">
+                Email
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                placeholder="Enter your email"
+                className="w-full px-4 py-3 bg-[#0A1929] border border-[#255D9A] focus:border-[#007FFF] focus:ring-1 focus:ring-[#007FFF] rounded-md text-[#FFFFFF] placeholder-[#718096]"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <label htmlFor="password" className="block text-sm font-medium text-[#E0E0E0]">
+                Password
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                placeholder="Create a password"
+                className="w-full px-4 py-3 bg-[#0A1929] border border-[#255D9A] focus:border-[#007FFF] focus:ring-1 focus:ring-[#007FFF] rounded-md text-[#FFFFFF] placeholder-[#718096]"
+              />
+              <p className="text-xs text-[#B0B0B0]">Must be at least 8 characters</p>
+            </div>
+            
+            <div className="space-y-2">
+              <label htmlFor="bloodType" className="block text-sm font-medium text-[#E0E0E0]">
+                Blood Type
+              </label>
+              <select
+                id="bloodType"
+                name="bloodType"
+                required
+                className="w-full px-4 py-3 bg-[#0A1929] border border-[#255D9A] focus:border-[#007FFF] focus:ring-1 focus:ring-[#007FFF] rounded-md text-[#FFFFFF]"
               >
-                <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-                  <UserPlus className="h-5 w-5 text-white" aria-hidden="true" />
-                </span>
-                Sign up
-              </button>
+                <option value="" disabled selected>Select your blood type</option>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+              </select>
             </div>
-
-            <div className="text-center">
-              <p className="text-sm text-gray-400">
-                Already have an account?{' '}
-                <Link href="/auth/login" className="text-primary hover:text-primary-dark">
-                  Sign in
-                </Link>
-              </p>
+            
+            <div className="flex items-center">
+              <input
+                id="terms"
+                name="terms"
+                type="checkbox"
+                required
+                className="h-4 w-4 text-[#007FFF] bg-[#0A1929] border-[#255D9A] rounded focus:ring-[#007FFF]"
+              />
+              <label htmlFor="terms" className="ml-2 block text-sm text-[#B0B0B0]">
+                I agree to the <Link href="/terms" className="text-[#007FFF] hover:text-[#0059B2]">Terms of Service</Link> and <Link href="/privacy" className="text-[#007FFF] hover:text-[#0059B2]">Privacy Policy</Link>
+              </label>
             </div>
+            
+            <button
+              type="submit"
+              className="w-full flex justify-center items-center gap-2 py-3 px-4 bg-[#007FFF] hover:bg-[#0059B2] text-white font-medium rounded-md transition-colors"
+            >
+              <UserPlus className="h-5 w-5" />
+              <span>Create Account</span>
+            </button>
           </form>
+          
+          <div className="mt-6 text-center text-sm">
+            <span className="text-[#B0B0B0]">Already have an account?</span>
+            <Link href="/auth/login" className="ml-1 text-[#007FFF] hover:text-[#0059B2]">
+              Sign in
+            </Link>
+          </div>
         </div>
-      </div>
-      
-      {/* Right side - Image */}
-      <div className="hidden lg:block relative flex-1">
-        <div className="absolute inset-0 bg-auth-pattern bg-cover bg-center">
-          <div className="absolute inset-0 bg-gray-900/70 backdrop-blur-sm"></div>
-        </div>
-      </div>
+      </main>
     </div>
   );
 }
